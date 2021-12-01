@@ -2,6 +2,8 @@ Advent of Code [2021 edition](https://adventofcode.com/2021) solutions written b
 
 ## running
 
+You'll need stable rust & cargo, intsall instructions [here](https://www.rust-lang.org/tools/install)
+
 ```shell
-make run-01
+$ make run-01
 ```
