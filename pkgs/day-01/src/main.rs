@@ -25,9 +25,9 @@ fn main() {
     dbg!(part2);
 }
 
-fn count_increase<T: Ord + Copy>(xs: &[T]) -> usize {
+fn count_increase<T: Ord>(xs: &[T]) -> usize {
     xs.iter()
-        .zip(xs.iter().skip(1))
+        .tuple_windows()
         .filter(|(x, y)| y > x)
         .count()
 }
