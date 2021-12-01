@@ -1,15 +1,9 @@
 use itertools::Itertools;
-use std::io::BufRead;
 
 fn main() {
-    let measurements = std::io::stdin()
-        .lock()
+    let measurements = include_str!("in")
         .lines()
-        .map(|m| {
-            let m = m.unwrap();
-            let m = m.trim();
-            m.parse::<u16>().unwrap()
-        })
+        .map(|m| m.parse::<u16>().unwrap())
         .collect::<Vec<_>>();
 
     let part1 = count_increase(&measurements);
@@ -26,8 +20,5 @@ fn main() {
 }
 
 fn count_increase<T: Ord>(xs: &[T]) -> usize {
-    xs.iter()
-        .tuple_windows()
-        .filter(|(x, y)| y > x)
-        .count()
+    xs.iter().tuple_windows().filter(|(x, y)| y > x).count()
 }
