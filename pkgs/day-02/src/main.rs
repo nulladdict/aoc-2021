@@ -28,7 +28,7 @@ fn main() {
     let moves = include_str!("in")
         .lines()
         .map(|line| {
-            let (command, amount) = line.split(" ").next_tuple().unwrap();
+            let (command, amount) = line.split(" ").collect_tuple().unwrap();
             let amount = amount.parse().unwrap();
             let command = command.parse().unwrap();
             (command, amount)
