@@ -35,8 +35,8 @@ fn bit_at(number: usize, offset: usize) -> u8 {
 }
 
 fn part2(numbers: &[usize]) -> usize {
-    let oxygen_rating = bit_fuckery(numbers, BIT_LENGTH - 1, most_common);
-    let c02_rating = bit_fuckery(numbers, BIT_LENGTH - 1, least_common);
+    let oxygen_rating = bit_fuckery(numbers, most_common);
+    let c02_rating = bit_fuckery(numbers, least_common);
     oxygen_rating * c02_rating
 }
 
@@ -48,27 +48,26 @@ fn least_common(ones: usize, zeros: usize) -> u8 {
     (ones < zeros) as u8
 }
 
-fn bit_fuckery<C>(numbers: &[usize], offset: usize, criteria: C) -> usize
+fn bit_fuckery<C>(numbers: &[usize], criteria: C) -> usize
 where
     C: Fn(usize, usize) -> u8,
 {
-    let size = numbers.len();
-    let ones = numbers
-        .iter()
-        .filter(|&&number| bit_at(number, offset) == 1)
-        .count();
-    let zeros = size - ones;
-    let the_bit = criteria(ones, zeros);
+    let mut numbers = numbers.to_vec();
 
-    let numbers = numbers
-        .iter()
-        .filter(|&&number| bit_at(number, offset) == the_bit)
-        .cloned()
-        .collect::<Vec<_>>();
+    for offset in (0..BIT_LENGTH).rev() {
+        let size = numbers.len();
+        let ones = numbers
+            .iter()
+            .filter(|&&number| bit_at(number, offset) == 1)
+            .count();
+        let zeros = size - ones;
+        let the_bit = criteria(ones, zeros);
 
-    if numbers.len() == 1 {
-        return numbers[0];
+        numbers.retain(|&number| bit_at(number, offset) == the_bit);
+        if numbers.len() == 1 {
+            break;
+        }
     }
 
-    bit_fuckery(&numbers, offset.checked_sub(1).unwrap(), criteria)
+    numbers[0]
 }
