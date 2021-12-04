@@ -1,7 +1,7 @@
 use nalgebra::SMatrix;
 
 const SIZE: usize = 5;
-type Board = SMatrix<(usize, bool), SIZE, SIZE>;
+type Board = SMatrix<Option<usize>, SIZE, SIZE>;
 
 fn main() {
     let input = include_str!("in");
@@ -17,19 +17,15 @@ fn main() {
 }
 
 fn parse_board(board: &str) -> Board {
-    Board::from_iterator(
-        board
-            .split_whitespace()
-            .map(|n| (n.parse().unwrap(), false)),
-    )
+    Board::from_iterator(board.split_whitespace().map(|n| Some(n.parse().unwrap())))
 }
 
 fn part1(order: &[usize], mut boards: Vec<Board>) -> usize {
-    for number in order {
+    for &number in order {
         for board in boards.iter_mut() {
-            mark(board, *number);
+            mark(board, number);
             if is_win(board) {
-                return score(&board, *number);
+                return score(&board, number);
             }
         }
     }
@@ -37,17 +33,17 @@ fn part1(order: &[usize], mut boards: Vec<Board>) -> usize {
 }
 
 fn part2(order: &[usize], mut boards: Vec<Board>) -> usize {
-    for number in order {
+    for &number in order {
         if boards.len() == 1 {
             let board = &mut boards[0];
-            mark(board, *number);
+            mark(board, number);
             if is_win(board) {
-                return score(board, *number);
+                return score(board, number);
             }
             continue;
         }
         for board in boards.iter_mut() {
-            mark(board, *number);
+            mark(board, number);
         }
         boards.retain(|board| !is_win(board));
     }
@@ -55,28 +51,22 @@ fn part2(order: &[usize], mut boards: Vec<Board>) -> usize {
 }
 
 fn mark(board: &mut Board, number: usize) -> () {
-    for tuple in board.iter_mut() {
-        if tuple.0 == number {
-            tuple.1 = true;
+    for value in board.iter_mut() {
+        if Some(number) == *value {
+            value.take();
         }
     }
 }
 
 fn is_win(board: &Board) -> bool {
-    let has_row = board
-        .row_iter()
-        .any(|row| row.iter().all(|&(_, seen)| seen));
+    let has_row = board.row_iter().any(|row| row.iter().all(|v| v.is_none()));
     let has_col = board
         .column_iter()
-        .any(|col| col.iter().all(|&(_, seen)| seen));
+        .any(|col| col.iter().all(|v| v.is_none()));
     has_row || has_col
 }
 
 fn score(board: &Board, number: usize) -> usize {
-    let sum = board
-        .iter()
-        .filter(|(_, seen)| !seen)
-        .map(|(n, _)| n)
-        .sum::<usize>();
+    let sum = board.iter().filter_map(|x| x.as_ref()).sum::<usize>();
     sum * number
 }
