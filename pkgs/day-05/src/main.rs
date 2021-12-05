@@ -22,11 +22,11 @@ fn parse(line: &str) -> Vent {
 }
 
 fn part1(vents: &[Vent]) -> usize {
-    let no_daigonals = vents
+    let no_diagonals = vents
         .iter()
         .copied()
         .filter(|(x1, y1, x2, y2)| x1 == x2 || y1 == y2);
-    count_intersections(no_daigonals)
+    count_intersections(no_diagonals)
 }
 
 fn part2(vents: &[Vent]) -> usize {
