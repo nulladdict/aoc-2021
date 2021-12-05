@@ -1,4 +1,4 @@
-use itertools::Itertools;
+use serde_scan::scan;
 use std::collections::HashMap;
 
 type Vent = (i32, i32, i32, i32);
@@ -14,11 +14,7 @@ fn main() {
 }
 
 fn parse(line: &str) -> Vent {
-    line.split(" -> ")
-        .flat_map(|s| s.split(","))
-        .map(|i| i.parse().unwrap())
-        .collect_tuple()
-        .unwrap()
+    scan!("{},{} -> {},{}" <- line).unwrap()
 }
 
 fn part1(vents: &[Vent]) -> usize {
